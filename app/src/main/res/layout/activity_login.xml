@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/gray"
     tools:context=".LoginActivity">
 
     <EditText
@@ -17,9 +18,15 @@
         android:layout_marginRight="16dp"
         android:ems="10"
         android:inputType="textEmailAddress"
+        android:background="@drawable/background_edit_text_rounded"
+        android:hint="Email"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:paddingLeft="8dp"
+        android:paddingRight="0dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="0dp" />
 
     <EditText
         android:id="@+id/edit_password"
@@ -28,18 +35,24 @@
         android:layout_marginTop="8dp"
         android:ems="10"
         android:inputType="textPassword"
+        android:background="@drawable/background_edit_text_rounded"
+        android:hint="Senha"
         app:layout_constraintEnd_toEndOf="@+id/edit_email"
         app:layout_constraintStart_toStartOf="@+id/edit_email"
-        app:layout_constraintTop_toBottomOf="@+id/edit_email" />
+        app:layout_constraintTop_toBottomOf="@+id/edit_email"
+        android:paddingLeft="8dp"
+        android:paddingRight="0dp"
+        android:paddingStart="8dp"
+        android:paddingEnd="0dp" />
 
     <Button
         android:id="@+id/button_enter"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginTop="32dp"
-        android:background="@color/holo_green_dark"
-        android:textColor="@color/white"
+        android:background="@drawable/background_button_rounded"
         android:text="@string/enter"
+        android:textColor="@color/white"
         app:layout_constraintEnd_toEndOf="@+id/edit_password"
         app:layout_constraintStart_toStartOf="@+id/edit_password"
         app:layout_constraintTop_toBottomOf="@+id/edit_password" />
@@ -49,8 +62,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
+        android:text="@string/new_register"
+        android:textColor="@color/teal_700"
         android:textStyle="bold"
-        android:text="@string/register"
         app:layout_constraintEnd_toEndOf="@+id/button_enter"
         app:layout_constraintStart_toStartOf="@+id/button_enter"
         app:layout_constraintTop_toBottomOf="@+id/button_enter" />
