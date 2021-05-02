@@ -22,7 +22,7 @@ public class LoginActivity extends AppCompatActivity {
 
         editEmail = findViewById(R.id.edit_email);
         editPassword = findViewById(R.id.edit_password);
-        buttonEnter = findViewById(R.id.button_enter);
+        buttonEnter = findViewById(R.id.button_register);
         textRegister = findViewById(R.id.text_register);
 
         buttonEnter.setOnClickListener(v -> {
@@ -34,7 +34,7 @@ public class LoginActivity extends AppCompatActivity {
         });
 
         textRegister.setOnClickListener(v -> {
-            Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            Intent intent = new Intent(this, RegisterActivity.class);
             startActivity(intent);
         });
     }
