@@ -5,8 +5,10 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.ImageDecoder;
 import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.text.TextUtils;
@@ -16,7 +18,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
@@ -29,7 +33,7 @@ public class RegisterActivity extends AppCompatActivity {
     private Button buttonPhoto, buttonRegister;
     private ImageView imagePhoto;
 
-    private Uri selectedUri;
+    private Uri pickedPhotoUri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,11 +44,17 @@ public class RegisterActivity extends AppCompatActivity {
         editEmail = findViewById(R.id.edit_email);
         editPassword = findViewById(R.id.edit_password);
         buttonPhoto = findViewById(R.id.button_photo);
-        buttonRegister = findViewById(R.id.button_register);
+        buttonRegister = findViewById(R.id.button_login);
         imagePhoto = findViewById(R.id.image_photo);
 
-        buttonPhoto.setOnClickListener(v -> pickPhoto());
-        buttonRegister.setOnClickListener(v -> register());
+        buttonPhoto.setOnClickListener(v -> pickProfilePhoto());
+        buttonRegister.setOnClickListener(v -> createNewAccount());
+    }
+
+    private void pickProfilePhoto() {
+        Intent intent = new Intent(Intent.ACTION_PICK);
+        intent.setType("image/*");
+        startActivityForResult(intent, 0);
     }
 
     @Override
@@ -53,11 +63,17 @@ public class RegisterActivity extends AppCompatActivity {
 
         if (data != null) {
             if (requestCode == 0) {
-                selectedUri = data.getData();
+                pickedPhotoUri = data.getData();
 
                 Bitmap bitmap;
                 try {
-                    bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), selectedUri);
+                    if (Build.VERSION.SDK_INT < 28) {
+                        bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), pickedPhotoUri);
+                    }
+                    else {
+                        ImageDecoder.Source source = ImageDecoder.createSource(getContentResolver(), pickedPhotoUri);
+                        bitmap = ImageDecoder.decodeBitmap(source);
+                    }
                     imagePhoto.setImageDrawable(new BitmapDrawable(getApplicationContext().getResources(), bitmap));
                     buttonPhoto.setAlpha(0);
                 } catch (IOException e) {
@@ -67,13 +83,7 @@ public class RegisterActivity extends AppCompatActivity {
         }
     }
 
-    private void pickPhoto() {
-        Intent intent = new Intent(Intent.ACTION_PICK);
-        intent.setType("image/*");
-        startActivityForResult(intent, 0);
-    }
-
-    private void register() {
+    private void createNewAccount() {
         String username = editUsername.getText().toString();
         String email = editEmail.getText().toString();
         String password = editPassword.getText().toString();
@@ -85,28 +95,43 @@ public class RegisterActivity extends AppCompatActivity {
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Log.i("Teste", task.getResult().getUser().getUid());
+                            Log.d("Log", task.getResult().getUser().getUid());
 
-                            saveUserInFirebase();
+                            saveUserInFirebase(username);
                         }
                     })
-                    .addOnFailureListener(e -> {
-                        Log.i("Teste", e.getMessage());
-                    });
+                    .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
         }
     }
 
-    private void saveUserInFirebase() {
-        String filename = UUID.randomUUID().toString();
-        final StorageReference ref = FirebaseStorage.getInstance().getReference("images/" + filename);
-        ref.putFile(selectedUri)
-                .addOnSuccessListener(taskSnapshot -> {
-                    ref.getDownloadUrl().addOnSuccessListener(uri -> {
-                        Log.i("Teste", uri.toString());
-                    });
-                })
-                .addOnFailureListener(e -> {
-                    Log.i("Teste", e.getMessage());
-                });
+    private void saveUserInFirebase(String username) {
+        String uid = FirebaseAuth.getInstance().getUid();
+
+        User user = new User(uid, username, null);
+
+        FirebaseFirestore.getInstance().collection("Users").add(user)
+                .addOnSuccessListener(documentReference -> Toast.makeText(this, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show())
+                .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
     }
+
+    /*private void saveUserInFirebase(String username) {
+        String filename = UUID.randomUUID().toString();
+        StorageReference ref = FirebaseStorage.getInstance().getReference("profiles/" + filename);
+        ref.putFile(pickedPhotoUri)
+                .addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl()
+                        .addOnSuccessListener(uri -> {
+                            Log.d("Log", uri.toString());
+
+                            String uid = FirebaseAuth.getInstance().getUid();
+                            String profileUrl = uri.toString();
+
+                            User user = new User(uid, username, profileUrl);
+
+                            FirebaseFirestore.getInstance().collection("Users").add(user)
+                                    .addOnSuccessListener(documentReference -> Toast.makeText(this, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show())
+                                    .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
+                        })
+                        .addOnFailureListener(e -> Log.e("Log", e.getMessage())))
+                .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
+    }*/
 }

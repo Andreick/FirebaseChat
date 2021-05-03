@@ -2,6 +2,6 @@
     <string name="app_name">FirebaseChat</string>
     <string name="enter">Entrar</string>
     <string name="new_register">Não tem uma conta? Crie aqui!</string>
-    <string name="register">Cadastrar</string>
+    <string name="register">Cadastre-se</string>
     <string name="photo">Foto</string>
 </resources>
