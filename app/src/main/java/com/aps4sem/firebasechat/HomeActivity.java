@@ -16,11 +16,7 @@ public class HomeActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
-    }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
         if (FirebaseAuth.getInstance().getUid() == null) goToLoginActivity();
     }
 
@@ -34,13 +30,18 @@ public class HomeActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.contacts) {
-            // TO-DO
+            goToContactsActivity();
         }
         else if (id == R.id.logout) {
             FirebaseAuth.getInstance().signOut();
             goToLoginActivity();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void goToContactsActivity() {
+        Intent intent = new Intent(this, ContactsActivity.class);
+        startActivity(intent);
     }
 
     private void goToLoginActivity() {

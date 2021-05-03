@@ -2,18 +2,22 @@ package com.aps4sem.firebasechat;
 
 public class User {
 
-    private final String uuid;
-    private final String username;
-    private final String profileUrl;
+    private String id;
+    private String username;
+    private String profileUrl;
 
-    public User(String uuid, String username, String profileUrl) {
-        this.uuid = uuid;
-        this.username = username;
-        this.profileUrl = profileUrl;
+    public User() {
     }
 
-    public String getUuid() {
-        return uuid;
+    public User(String id, String username) {
+        this.id = id;
+        this.username = username;
+
+        this.profileUrl = "https://firebasestorage.googleapis.com/v0/b/fir-chat-7bc9b.appspot.com/o/profiles%2Fdefault_profile.png?alt=media&token=41a4c66b-273e-415e-bd1b-d1369adec53e";
+    }
+
+    public String getId() {
+        return id;
     }
 
     public String getUsername() {

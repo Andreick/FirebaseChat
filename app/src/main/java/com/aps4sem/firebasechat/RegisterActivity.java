@@ -95,8 +95,6 @@ public class RegisterActivity extends AppCompatActivity {
             FirebaseAuth.getInstance().createUserWithEmailAndPassword(email, password)
                     .addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
-                            Log.d("Log", task.getResult().getUser().getUid());
-
                             saveUserInFirebase(username);
                         }
                     })
@@ -107,7 +105,7 @@ public class RegisterActivity extends AppCompatActivity {
     private void saveUserInFirebase(String username) {
         String uid = FirebaseAuth.getInstance().getUid();
 
-        User user = new User(uid, username, null);
+        User user = new User(uid, username);
 
         FirebaseFirestore.getInstance().collection("Users").add(user)
                 .addOnSuccessListener(documentReference -> {
