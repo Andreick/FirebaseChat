@@ -20,6 +20,7 @@ import com.xwray.groupie.Item;
 import com.xwray.groupie.ViewHolder;
 
 import java.util.List;
+import java.util.Objects;
 
 public class ContactsActivity extends AppCompatActivity {
 
@@ -38,9 +39,7 @@ public class ContactsActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
         recyclerView.setAdapter(adapter);
 
-        adapter.setOnItemClickListener((item, view) -> {
-            goToChatActivity((UserItem) item);
-        });
+        adapter.setOnItemClickListener((item, view) -> goToChatActivity((UserItem) item));
 
         fetchUsers();
     }
@@ -56,9 +55,9 @@ public class ContactsActivity extends AppCompatActivity {
         FirebaseFirestore.getInstance().collection("Users")
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
                     if (e == null) {
-                        List<DocumentSnapshot> docs = queryDocumentSnapshots.getDocuments();
+                        List<DocumentSnapshot> docs = Objects.requireNonNull(queryDocumentSnapshots).getDocuments();
                         for (DocumentSnapshot doc: docs) {
-                            User user = doc.toObject(User.class);
+                            User user = Objects.requireNonNull(doc.toObject(User.class));
                             if (!currentUid.equals(user.getId())) {
                                 adapter.add(new UserItem(user));
                             }
@@ -70,7 +69,7 @@ public class ContactsActivity extends AppCompatActivity {
                 });
     }
 
-    private static class UserItem extends Item<ViewHolder> {
+    private class UserItem extends Item<ViewHolder> {
 
         private final User user;
 

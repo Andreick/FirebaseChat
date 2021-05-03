@@ -9,8 +9,7 @@ public class User implements Parcelable {
     private String username;
     private String profileUrl;
 
-    public User() {
-    }
+    public User() { }
 
     public User(String id, String username) {
         this.id = id;

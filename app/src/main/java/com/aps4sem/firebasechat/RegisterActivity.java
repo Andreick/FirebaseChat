@@ -25,6 +25,7 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 
 import java.io.IOException;
+import java.util.Objects;
 import java.util.UUID;
 
 public class RegisterActivity extends AppCompatActivity {
@@ -103,12 +104,14 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void saveUserInFirebase(String username) {
-        String uid = FirebaseAuth.getInstance().getUid();
+        String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getUid());
 
         User user = new User(uid, username);
 
-        FirebaseFirestore.getInstance().collection("Users").add(user)
-                .addOnSuccessListener(documentReference -> {
+        FirebaseFirestore.getInstance().collection("Users")
+                .document(uid)
+                .set(user)
+                .addOnSuccessListener(aVoid -> {
                     Toast.makeText(this, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show();
                     goToHomeActivity();
                 })
