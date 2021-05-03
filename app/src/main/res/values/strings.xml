@@ -4,4 +4,6 @@
     <string name="new_register">Não tem uma conta? Crie aqui!</string>
     <string name="register">Cadastre-se</string>
     <string name="photo">Foto</string>
+    <string name="contacts">Contatos</string>
+    <string name="logout">Sair</string>
 </resources>

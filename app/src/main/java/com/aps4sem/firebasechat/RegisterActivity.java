@@ -110,7 +110,10 @@ public class RegisterActivity extends AppCompatActivity {
         User user = new User(uid, username, null);
 
         FirebaseFirestore.getInstance().collection("Users").add(user)
-                .addOnSuccessListener(documentReference -> Toast.makeText(this, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show())
+                .addOnSuccessListener(documentReference -> {
+                    Toast.makeText(this, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show();
+                    goToHomeActivity();
+                })
                 .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
     }
 
@@ -134,4 +137,10 @@ public class RegisterActivity extends AppCompatActivity {
                         .addOnFailureListener(e -> Log.e("Log", e.getMessage())))
                 .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
     }*/
+
+    private void goToHomeActivity() {
+        Intent intent = new Intent(this, HomeActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+        startActivity(intent);
+    }
 }

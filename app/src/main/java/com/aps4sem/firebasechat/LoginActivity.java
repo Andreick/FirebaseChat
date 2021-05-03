@@ -45,14 +45,14 @@ public class LoginActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         Log.d("Log", task.getResult().getUser().getUid());
-                        goToMessagesActivity();
+                        goToHomeActivity();
                     }
                 })
                 .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
     }
 
-    private void goToMessagesActivity() {
-        Intent intent = new Intent(this, MessagesActivity.class);
+    private void goToHomeActivity() {
+        Intent intent = new Intent(this, HomeActivity.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
         startActivity(intent);
     }
