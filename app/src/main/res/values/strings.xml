@@ -6,4 +6,9 @@
     <string name="photo">Foto</string>
     <string name="contacts">Contatos</string>
     <string name="logout">Sair</string>
+    <string name="send">Enviar</string>
+    <string name="message_hint">Digite aqui...</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Senha</string>
+    <string name="name_hint">Nome</string>
 </resources>

@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/gray"
+    android:background="@color/light_gray"
     tools:context=".RegisterActivity">
 
     <EditText
@@ -18,7 +18,8 @@
         android:layout_marginRight="16dp"
         android:background="@drawable/background_edit_text_rounded"
         android:ems="10"
-        android:hint="Nome"
+        android:hint="@string/name_hint"
+        android:autofillHints="@string/name_hint"
         android:inputType="textPersonName"
         android:paddingStart="8dp"
         android:paddingLeft="8dp"
@@ -35,7 +36,8 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/background_edit_text_rounded"
         android:ems="10"
-        android:hint="Email"
+        android:hint="@string/email_hint"
+        android:autofillHints="@string/email_hint"
         android:inputType="textEmailAddress"
         android:paddingStart="8dp"
         android:paddingLeft="8dp"
@@ -52,7 +54,8 @@
         android:layout_marginTop="8dp"
         android:background="@drawable/background_edit_text_rounded"
         android:ems="10"
-        android:hint="Senha"
+        android:hint="@string/password_hint"
+        android:autofillHints="@string/password_hint"
         android:inputType="textPassword"
         android:paddingStart="8dp"
         android:paddingLeft="8dp"

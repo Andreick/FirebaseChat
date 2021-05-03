@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageView;
@@ -34,10 +35,21 @@ public class ContactsActivity extends AppCompatActivity {
         adapter = new GroupAdapter<>();
 
         RecyclerView recyclerView = findViewById(R.id.recycler);
-        recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        recyclerView.setAdapter(adapter);
+
+        adapter.setOnItemClickListener((item, view) -> {
+            goToChatActivity((UserItem) item);
+        });
 
         fetchUsers();
+    }
+
+    private void goToChatActivity(UserItem userItem) {
+        Intent intent = new Intent(this, ChatActivity.class);
+        intent.putExtra("user", userItem.user);
+
+        startActivity(intent);
     }
 
     private void fetchUsers() {
