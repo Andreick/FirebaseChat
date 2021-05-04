@@ -2,6 +2,7 @@ package com.aps4sem.firebasechat;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -52,7 +53,7 @@ public class HomeActivity extends AppCompatActivity {
 
     private void goToChatActivity(ContactItem contactItem) {
         Intent intent = new Intent(this, ChatActivity.class);
-        intent.putExtra("user", contactItem.user);
+        intent.putExtra("user", contactItem.lastMessage.getContact());
 
         startActivity(intent);
     }
@@ -108,12 +109,10 @@ public class HomeActivity extends AppCompatActivity {
 
     private class ContactItem extends Item<ViewHolder> {
 
-        private final User user;
-        private final Message lastMessage;
+        private final LastMessage lastMessage;
 
         public ContactItem(LastMessage lastMessage) {
-            this.user = lastMessage.getUser();
-            this.lastMessage = lastMessage.getMessage();
+            this.lastMessage = lastMessage;
         }
 
         @Override
@@ -122,9 +121,9 @@ public class HomeActivity extends AppCompatActivity {
             TextView textLastMessage = viewHolder.itemView.findViewById(R.id.text_lastMessage);
             ImageView imageProfile = viewHolder.itemView.findViewById(R.id.image_profile);
 
-            textUsername.setText(user.getUsername());
+            textUsername.setText(lastMessage.getContact().getUsername());
             textLastMessage.setText(lastMessage.getText());
-            Picasso.get().load(user.getProfileUrl()).into(imageProfile);
+            Picasso.get().load(lastMessage.getContact().getProfileUrl()).into(imageProfile);
         }
 
         @Override

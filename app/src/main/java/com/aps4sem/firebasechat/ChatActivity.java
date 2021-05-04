@@ -27,7 +27,7 @@ import java.util.Objects;
 public class ChatActivity extends AppCompatActivity {
 
     private FirebaseFirestore firestore;
-    private String fromUid;
+    private String senderUid;
     private User currentUser;
     private User contactUser;
     private TextView editMessage;
@@ -38,10 +38,10 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        fromUid = Objects.requireNonNull(FirebaseAuth.getInstance().getUid());
+        senderUid = Objects.requireNonNull(FirebaseAuth.getInstance().getUid());
         firestore = FirebaseFirestore.getInstance();
         firestore.collection(FirestoreCollection.Users.name())
-                .document(fromUid)
+                .document(senderUid)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> currentUser = documentSnapshot.toObject(User.class))
                 .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
@@ -59,7 +59,7 @@ public class ChatActivity extends AppCompatActivity {
         button_chat.setOnClickListener(v -> sendMessage());
 
         firestore.collection(FirestoreCollection.Users.name())
-                .document(fromUid)
+                .document(senderUid)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> fetchMessages())
                 .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
@@ -69,7 +69,7 @@ public class ChatActivity extends AppCompatActivity {
         String toId = contactUser.getId();
 
         firestore.collection(FirestoreCollection.Messages.name())
-                .document(fromUid)
+                .document(senderUid)
                 .collection(toId)
                 .orderBy("timestamp", Query.Direction.ASCENDING)
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
@@ -93,35 +93,35 @@ public class ChatActivity extends AppCompatActivity {
         String text = editMessage.getText().toString();
 
         if (!TextUtils.isEmpty(text)) {
-            String toUid = contactUser.getId();
-            Message message = new Message(text, currentUser.getId(), toUid);
+            String receiverUid = contactUser.getId();
+            Message message = new Message(text, senderUid, receiverUid);
 
             firestore.collection(FirestoreCollection.Messages.name())
-                    .document(fromUid)
-                    .collection(toUid)
+                    .document(senderUid)
+                    .collection(receiverUid)
                     .add(message)
                     .addOnSuccessListener(documentReference -> {
-                        LastMessage lastMessage = new LastMessage(contactUser, message);
+                        LastMessage lastMessage = new LastMessage(contactUser, senderUid, text, message.getTimestamp());
 
                         firestore.collection(FirestoreCollection.HomeMessages.name())
-                                .document(fromUid)
+                                .document(senderUid)
                                 .collection(FirestoreCollection.LastMessage.name())
-                                .document(toUid)
+                                .document(receiverUid)
                                 .set(lastMessage);
                     })
                     .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
 
             firestore.collection(FirestoreCollection.Messages.name())
-                    .document(toUid)
-                    .collection(fromUid)
+                    .document(receiverUid)
+                    .collection(senderUid)
                     .add(message)
                     .addOnSuccessListener(documentReference -> {
-                        LastMessage lastMessage = new LastMessage(currentUser, message);
+                        LastMessage lastMessage = new LastMessage(currentUser, senderUid, text, message.getTimestamp());
 
                         firestore.collection(FirestoreCollection.HomeMessages.name())
-                                .document(toUid)
+                                .document(receiverUid)
                                 .collection(FirestoreCollection.LastMessage.name())
-                                .document(fromUid)
+                                .document(senderUid)
                                 .set(lastMessage);
                     })
                     .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
@@ -144,14 +144,19 @@ public class ChatActivity extends AppCompatActivity {
             ImageView imageUserMessage = viewHolder.itemView.findViewById(R.id.image_userMessage);
 
             textMessage.setText(message.getText());
-            Picasso.get().load(contactUser.getProfileUrl()).into(imageUserMessage);
+
+            if (message.getSenderUid().equals(senderUid)) {
+                Picasso.get().load(currentUser.getProfileUrl()).into(imageUserMessage);
+            } else {
+                Picasso.get().load(contactUser.getProfileUrl()).into(imageUserMessage);
+            }
         }
 
         @Override
         public int getLayout() {
-            return message.getFromUid().equals(fromUid)
-                    ? R.layout.item_from_message
-                    : R.layout.item_to_message;
+            return message.getSenderUid().equals(senderUid)
+                    ? R.layout.item_sender_message
+                    : R.layout.item_receiver_message;
         }
     }
 }

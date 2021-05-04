@@ -11,10 +11,10 @@ public class User implements Parcelable {
 
     public User() { }
 
-    public User(String id, String username) {
+    public User(String id, String username, String profileUrl) {
         this.id = id;
         this.username = username;
-        this.profileUrl = "https://firebasestorage.googleapis.com/v0/b/fir-chat-7bc9b.appspot.com/o/profiles%2Fdefault_profile.png?alt=media&token=41a4c66b-273e-415e-bd1b-d1369adec53e";
+        this.profileUrl = profileUrl;
     }
 
     protected User(Parcel in) {

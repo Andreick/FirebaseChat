@@ -2,21 +2,33 @@ package com.aps4sem.firebasechat;
 
 public class LastMessage {
 
-    private User user;
-    private Message message;
+    private User contact;
+    private String senderUid;
+    private String text;
+    private long timestamp;
 
     public LastMessage() { }
 
-    public LastMessage(User user, Message message) {
-        this.user = user;
-        this.message = message;
+    public LastMessage(User contact, String senderUid, String text, long timestamp) {
+        this.contact = contact;
+        this.senderUid = senderUid;
+        this.text = text;
+        this.timestamp = timestamp;
     }
 
-    public User getUser() {
-        return user;
+    public User getContact() {
+        return contact;
     }
 
-    public Message getMessage() {
-        return message;
+    public String getSenderUid() {
+        return senderUid;
+    }
+
+    public String getText() {
+        return text;
+    }
+
+    public long getTimestamp() {
+        return timestamp;
     }
 }

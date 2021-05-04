@@ -1,8 +1,5 @@
 package com.aps4sem.firebasechat;
 
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.ImageDecoder;
@@ -18,7 +15,9 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.android.gms.tasks.Task;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
@@ -104,40 +103,28 @@ public class RegisterActivity extends AppCompatActivity {
     }
 
     private void saveUserInFirebase(String username) {
-        String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getUid());
-
-        User user = new User(uid, username);
-
-        FirebaseFirestore.getInstance().collection(FirestoreCollection.Users.name())
-                .document(uid)
-                .set(user)
-                .addOnSuccessListener(aVoid -> {
-                    Toast.makeText(this, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show();
-                    goToHomeActivity();
-                })
-                .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
-    }
-
-    /*private void saveUserInFirebase(String username) {
         String filename = UUID.randomUUID().toString();
         StorageReference ref = FirebaseStorage.getInstance().getReference("profiles/" + filename);
         ref.putFile(pickedPhotoUri)
                 .addOnSuccessListener(taskSnapshot -> ref.getDownloadUrl()
                         .addOnSuccessListener(uri -> {
-                            Log.d("Log", uri.toString());
-
-                            String uid = FirebaseAuth.getInstance().getUid();
+                            String uid = Objects.requireNonNull(FirebaseAuth.getInstance().getUid());
                             String profileUrl = uri.toString();
 
                             User user = new User(uid, username, profileUrl);
 
-                            FirebaseFirestore.getInstance().collection("Users").add(user)
-                                    .addOnSuccessListener(documentReference -> Toast.makeText(this, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show())
+                            FirebaseFirestore.getInstance().collection(FirestoreCollection.Users.name())
+                                    .document(uid)
+                                    .set(user)
+                                    .addOnSuccessListener(aVoid -> {
+                                        Toast.makeText(this, "Conta criada com sucesso!", Toast.LENGTH_SHORT).show();
+                                        goToHomeActivity();
+                                    })
                                     .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
                         })
                         .addOnFailureListener(e -> Log.e("Log", e.getMessage())))
                 .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
-    }*/
+    }
 
     private void goToHomeActivity() {
         Intent intent = new Intent(this, HomeActivity.class);

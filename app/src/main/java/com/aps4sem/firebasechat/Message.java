@@ -3,16 +3,16 @@ package com.aps4sem.firebasechat;
 public class Message {
 
     private String text;
-    private String fromUid;
-    private String toUid;
+    private String senderUid;
+    private String receiverUid;
     private long timestamp;
 
     public Message() { }
 
-    public Message(String text, String fromUid, String toUid) {
+    public Message(String text, String senderUid, String receiverUid) {
         this.text = text;
-        this.fromUid = fromUid;
-        this.toUid = toUid;
+        this.senderUid = senderUid;
+        this.receiverUid = receiverUid;
         this.timestamp = System.currentTimeMillis();
     }
 
@@ -20,12 +20,12 @@ public class Message {
         return text;
     }
 
-    public String getFromUid() {
-        return fromUid;
+    public String getSenderUid() {
+        return senderUid;
     }
 
-    public String getToUid() {
-        return toUid;
+    public String getReceiverUid() {
+        return receiverUid;
     }
 
     public long getTimestamp() {
