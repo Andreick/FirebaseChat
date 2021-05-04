@@ -108,7 +108,7 @@ public class RegisterActivity extends AppCompatActivity {
 
         User user = new User(uid, username);
 
-        FirebaseFirestore.getInstance().collection("Users")
+        FirebaseFirestore.getInstance().collection(FirestoreCollection.Users.name())
                 .document(uid)
                 .set(user)
                 .addOnSuccessListener(aVoid -> {

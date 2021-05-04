@@ -52,7 +52,7 @@ public class ContactsActivity extends AppCompatActivity {
     }
 
     private void fetchUsers() {
-        FirebaseFirestore.getInstance().collection("Users")
+        FirebaseFirestore.getInstance().collection(FirestoreCollection.Users.name())
                 .addSnapshotListener((queryDocumentSnapshots, e) -> {
                     if (e == null) {
                         List<DocumentSnapshot> docs = Objects.requireNonNull(queryDocumentSnapshots).getDocuments();

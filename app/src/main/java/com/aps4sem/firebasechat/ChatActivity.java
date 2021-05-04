@@ -27,8 +27,9 @@ import java.util.Objects;
 public class ChatActivity extends AppCompatActivity {
 
     private FirebaseFirestore firestore;
-    private User user;
     private String fromUid;
+    private User currentUser;
+    private User contactUser;
     private TextView editMessage;
     private GroupAdapter<ViewHolder> adapter;
 
@@ -37,13 +38,18 @@ public class ChatActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
+        fromUid = Objects.requireNonNull(FirebaseAuth.getInstance().getUid());
         firestore = FirebaseFirestore.getInstance();
-        user = getIntent().getExtras().getParcelable("user");
-        fromUid = FirebaseAuth.getInstance().getUid();
+        firestore.collection(FirestoreCollection.Users.name())
+                .document(fromUid)
+                .get()
+                .addOnSuccessListener(documentSnapshot -> currentUser = documentSnapshot.toObject(User.class))
+                .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
+        contactUser = getIntent().getExtras().getParcelable("user");
         editMessage = findViewById(R.id.edit_message);
         adapter = new GroupAdapter<>();
 
-        Objects.requireNonNull(getSupportActionBar()).setTitle(user.getUsername());
+        Objects.requireNonNull(getSupportActionBar()).setTitle(contactUser.getUsername());
 
         RecyclerView recyclerView = findViewById(R.id.recycler_chat);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
@@ -52,7 +58,7 @@ public class ChatActivity extends AppCompatActivity {
         Button button_chat = findViewById(R.id.button_send);
         button_chat.setOnClickListener(v -> sendMessage());
 
-        firestore.collection("Users")
+        firestore.collection(FirestoreCollection.Users.name())
                 .document(fromUid)
                 .get()
                 .addOnSuccessListener(documentSnapshot -> fetchMessages())
@@ -60,9 +66,9 @@ public class ChatActivity extends AppCompatActivity {
     }
 
     private void fetchMessages() {
-        String toId = user.getId();
+        String toId = contactUser.getId();
 
-        firestore.collection("Conversations")
+        firestore.collection(FirestoreCollection.Messages.name())
                 .document(fromUid)
                 .collection(toId)
                 .orderBy("timestamp", Query.Direction.ASCENDING)
@@ -87,24 +93,36 @@ public class ChatActivity extends AppCompatActivity {
         String text = editMessage.getText().toString();
 
         if (!TextUtils.isEmpty(text)) {
-            String toUid = user.getId();
-            Message message = new Message(text, fromUid, toUid);
+            String toUid = contactUser.getId();
+            Message message = new Message(text, currentUser.getId(), toUid);
 
-            firestore.collection("Conversations")
+            firestore.collection(FirestoreCollection.Messages.name())
                     .document(fromUid)
                     .collection(toUid)
                     .add(message)
                     .addOnSuccessListener(documentReference -> {
-                        Log.d("Log", documentReference.getId());
+                        LastMessage lastMessage = new LastMessage(contactUser, message);
+
+                        firestore.collection(FirestoreCollection.HomeMessages.name())
+                                .document(fromUid)
+                                .collection(FirestoreCollection.LastMessage.name())
+                                .document(toUid)
+                                .set(lastMessage);
                     })
                     .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
 
-            firestore.collection("Conversations")
+            firestore.collection(FirestoreCollection.Messages.name())
                     .document(toUid)
                     .collection(fromUid)
                     .add(message)
                     .addOnSuccessListener(documentReference -> {
-                        Log.d("Log", documentReference.getId());
+                        LastMessage lastMessage = new LastMessage(currentUser, message);
+
+                        firestore.collection(FirestoreCollection.HomeMessages.name())
+                                .document(toUid)
+                                .collection(FirestoreCollection.LastMessage.name())
+                                .document(fromUid)
+                                .set(lastMessage);
                     })
                     .addOnFailureListener(e -> Log.e("Log", e.getMessage()));
 
@@ -126,7 +144,7 @@ public class ChatActivity extends AppCompatActivity {
             ImageView imageUserMessage = viewHolder.itemView.findViewById(R.id.image_userMessage);
 
             textMessage.setText(message.getText());
-            Picasso.get().load(user.getProfileUrl()).into(imageUserMessage);
+            Picasso.get().load(contactUser.getProfileUrl()).into(imageUserMessage);
         }
 
         @Override
